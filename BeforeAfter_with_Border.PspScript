@@ -1,0 +1,306 @@
+from PSPApp import *
+
+#Border settings
+borderWidth = 30
+borderColor = (255,255,255) # white
+
+#Text settings
+text = u'Before'
+txtFont = u'Arial'
+txtFontSize = 180
+txtBold = True
+txtColor = (255,255,255) #white
+textBorderWidth = 2
+
+def ScriptProperties():
+    return {
+        'Author': u'Dolph Lei',
+        'Copyright': u'',
+        'Description': u'BeforeAfter with Border',
+        'Host': u'PaintShop Pro',
+        'Host Version': u'23.00'
+        }
+
+def Do(Environment):
+    
+    # EnableOptimizedScriptUndo
+    App.Do( Environment, 'EnableOptimizedScriptUndo', {
+            'GeneralSettings': {
+                'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                'Version': ((23,0,0),1)
+                }
+            })
+
+    Result = App.Do( Environment, 'GetNumber', {
+       'DefaultValue': 1,             # values for test purposes only
+       'GetInteger': True,        
+       'LogarithmicSlider':True,
+       'MinValue': 1,
+       'MaxValue': 5,
+       'DialogTitle': 'Select Text Position',
+       'Prompt': '1: Left Upper   2: Right Upper\n3: Center  4: Left Down   5: Right Down',
+       'GeneralSettings': {
+            'ExecutionMode': App.Constants.ExecutionMode.Interactive,
+        }
+    })
+    
+    if(Result['OKButton']):
+        
+        # AddBorders
+        App.Do( Environment, 'AddBorders', {
+                'Bottom': borderWidth, 
+                'Left': borderWidth, 
+                'Right': borderWidth, 
+                'Top': borderWidth, 
+                'Symmetric': True, 
+                'Color': borderColor, 
+                'DimUnits': App.Constants.UnitsOfMeasure.Pixels, 
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+        })
+       
+        TxtResult = App.Do( Environment, 'GetNumber', {
+            'DefaultValue': 1,             # values for test purposes only
+            'GetInteger': True,        
+            'LogarithmicSlider':True,
+            'MinValue': 1,
+            'MaxValue': 5,
+            'DialogTitle': 'Select Text to be drawn',
+            'Prompt': '1: "Before"  2: "After"\n3: "BEFORE"  4: "AFTER"   5: [Custom]',
+            'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Interactive,
+                }
+        })
+
+        if( TxtResult['OKButton'] ):
+            if( TxtResult['EnteredNumber']==1.0 ):
+                text = 'Before'
+            elif( TxtResult['EnteredNumber']==2.0 ):
+                text = 'After'
+            elif( TxtResult['EnteredNumber']==3.0 ):
+                text = 'BEFORE'
+            elif( TxtResult['EnteredNumber']==4.0 ):
+                text = 'AFTER'
+            elif( TxtResult['EnteredNumber']==5.0 ):
+                CustTxtResult = App.Do( Environment, 'GetString', {
+                    'DefaultText': 'Before',
+                    'DialogTitle': 'Custom Text',
+                    'Prompt': 'Provide your custom Text: ',
+                    'GeneralSettings': {
+                            'ExecutionMode': App.Constants.ExecutionMode.Interactive,
+                        }
+                })
+                if( CustTxtResult['OKButton'] ):
+                    text = CustTxtResult['EnteredText']
+            
+
+        # Add Text
+        App.Do( Environment, 'TextEx', {
+                'Visibility': True, 
+                'CreateAs': App.Constants.CreateAs.Vector, 
+                'Start': (1,1), 
+                'TextFlow': App.Constants.TextFlow.HorizontalDown, 
+                'TextType': App.Constants.TextType.TextBase, 
+                'Matrix': [
+                    1,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    1
+                ], 
+                'AutoKern': True, 
+                'Kerning': 0, 
+                'Tracking': 0, 
+                'Leading': 0, 
+                'Font': txtFont, 
+                'PointSize': txtFontSize, 
+                'Italic': False, 
+                'Bold': txtBold, 
+                'Underline': False, 
+                'SuperScript': False, 
+                'SubScript': False, 
+                'Strikethru': False, 
+                'AntialiasStyle': App.Constants.AntialiasEx.Sharp, 
+                'WarpText': True, 
+                'SetText': App.Constants.Justify.Left, 
+                'Fill': {
+                    'Color': txtColor, 
+                    'Pattern': None, 
+                    'Gradient': None, 
+                    'Texture': None, 
+                    'Art': None, 
+                    'Identity': u'Material'
+                    }, 
+                'Stroke': {
+                    'Color': (0,0,0), #black 
+                    'Pattern': None, 
+                    'Gradient': None, 
+                    'Texture': None, 
+                    'Art': None, 
+                    'Identity': u'Material'
+                    }, 
+                'LineWidth': textBorderWidth, 
+                'LineStyle': {
+                    'Name': u'', 
+                    'FirstCap': (u'',0.25,0.25), 
+                    'LastCap': (u'',0.25,0.25), 
+                    'FirstSegCap': (u'',0.25,0.25), 
+                    'LastSegCap': (u'',0.25,0.25), 
+                    'UseSegmentCaps': False, 
+                    'Segments': None
+                    }, 
+                'Join': App.Constants.JointStyle.Miter, 
+                'MiterLimit': 10, 
+                'Characters': text, 
+                'Strings': None, 
+                'TextTarget': (0,0,[1],True), 
+                'PathTarget': None, 
+                'InObject': False, 
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+        })
+
+        # Set Text Position
+        textPos = Result['EnteredNumber']
+        if( textPos==1.0 ):  #Left Upper
+            # Vector Align Left
+            App.Do( Environment, 'VectorAlignLeft', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+            # Vector Align Top
+            App.Do( Environment, 'VectorAlignTop', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+        
+            # VectorMove
+            App.Do( Environment, 'VectorMove', {
+                    'MoveX': borderWidth, 
+                    'MoveY': borderWidth, 
+                    'GeneralSettings': {
+                        'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                        'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                        'Version': ((23,0,0),1)
+                        }
+            })
+
+        elif( textPos==2.0 ):   #Right Upper
+            # Vector Align Right
+            App.Do( Environment, 'VectorAlignRight', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+            # Vector Align Top
+            App.Do( Environment, 'VectorAlignTop', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+        
+            # VectorMove
+            App.Do( Environment, 'VectorMove', {
+                    'MoveX': -borderWidth, 
+                    'MoveY': borderWidth, 
+                    'GeneralSettings': {
+                        'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                        'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                        'Version': ((23,0,0),1)
+                        }
+            })
+
+        elif( textPos==3.0 ):   #Center
+            # Vector Align Center
+            App.Do( Environment, 'VectorAlignCenterInCanvas', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+
+        elif( textPos==4.0 ):   #Left Down
+            # Vector Align Left
+            App.Do( Environment, 'VectorAlignLeft', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+            # Vector Align Bottom
+            App.Do( Environment, 'VectorAlignBottom', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+        
+            # VectorMove
+            App.Do( Environment, 'VectorMove', {
+                    'MoveX': borderWidth, 
+                    'MoveY': -borderWidth, 
+                    'GeneralSettings': {
+                        'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                        'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                        'Version': ((23,0,0),1)
+                        }
+            })
+
+        elif( textPos==5.0 ):   #Right Down
+            # Vector Align Right
+            App.Do( Environment, 'VectorAlignRight', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+            # Vector Align Bottom
+            App.Do( Environment, 'VectorAlignBottom', {
+                'GeneralSettings': {
+                    'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                    'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                    'Version': ((23,0,0),1)
+                    }
+            })
+        
+            # VectorMove
+            App.Do( Environment, 'VectorMove', {
+                    'MoveX': -borderWidth, 
+                    'MoveY': -borderWidth, 
+                    'GeneralSettings': {
+                        'ExecutionMode': App.Constants.ExecutionMode.Default, 
+                        'AutoActionMode': App.Constants.AutoActionMode.Match, 
+                        'Version': ((23,0,0),1)
+                        }
+            })
+
+
+
+        
+
+        
