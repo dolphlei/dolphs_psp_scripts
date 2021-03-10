@@ -5,6 +5,7 @@ PaintShop Pro scripts created by Dolph
 * BeforeAfter_with_Border.PspScript
   1. 加上白色邊框
   2. 在 圖片 [左上 / 右上 / 中央 / 左下 / 右下] (可選) 加上 [Before / After / BEFORE / AFTER / 自訂] 白色文字
+  3. 詳細說明，請參考: https://dolphlei.github.io/blog/article/paint-shop-pro-script-before-after
   
   
 
